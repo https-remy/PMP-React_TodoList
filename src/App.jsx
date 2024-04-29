@@ -13,6 +13,7 @@ function App() {
 			return;
 		}
 		const txtTodo = e.target[0].value;
+		e.target[0].value = "";
 		const newTodo = {id: todos.length + 1, txt: txtTodo};
 		setTodos([...todos, newTodo]);
 	}
@@ -20,8 +21,11 @@ function App() {
 	if (todos.length === 0) {
 		content = <p className="text-slate-100">You didnt have things to do, had some !</p>;
 	} else {
-		content = todos.map((todo) => <CardToDo key={todo.id} 
-												txt={todo.txt} />);
+		content = todos.map((todo) => <CardToDo key={todo.id}
+												id={todo.id}
+												txt={todo.txt} 
+												deleteTodo={setTodos}
+												todos={todos}/>);
 	}
 
 	return (
