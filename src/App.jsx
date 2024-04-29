@@ -1,31 +1,43 @@
 import CardToDo from "./CardToDo";
 import { useState } from "react";
+import { nanoid } from "nanoid";
 
 const DEFAULT_TODO = [];
 
 function App() {
 	const [todos, setTodos] = useState(DEFAULT_TODO);
+	const [showValidation, setShowValidation] = useState(false);
 	let content;
+
+	if (todos.length > 0) {
+		content = todos.map((todo) => (
+			<CardToDo
+				key={nanoid()}
+				id={todo.id}
+				txt={todo.txt}
+				setTodos={setTodos}
+				todos={todos}
+			/>
+		));
+	} else {
+		content = <p className='text-white'>Nothing to do, add some !</p>;
+	}
 
 	function handleSubmit(e) {
 		e.preventDefault();
-		if (!e.target[0].value) {
+		if (e.target[0].value === "") {
+			setShowValidation(true);
 			return;
 		}
-		const txtTodo = e.target[0].value;
-		e.target[0].value = "";
-		const newTodo = {id: todos.length + 1, txt: txtTodo};
+		const newTodo = {
+			key: nanoid(),
+			id: todos.length,
+			txt: e.target[0].value,
+			setTodos: setTodos,
+		};
 		setTodos([...todos, newTodo]);
-	}
-
-	if (todos.length === 0) {
-		content = <p className="text-slate-100">You didnt have things to do, had some !</p>;
-	} else {
-		content = todos.map((todo) => <CardToDo key={todo.id}
-												id={todo.id}
-												txt={todo.txt} 
-												deleteTodo={setTodos}
-												todos={todos}/>);
+		e.target[0].value = "";
+		setShowValidation(false);
 	}
 
 	return (
@@ -36,14 +48,21 @@ function App() {
 					<label htmlFor='todo-item' className='text-slate-50'>
 						Add Something to do
 					</label>
-					<input type='text' className='mt-1 block w-full rounded' name="todo"/>
+					<input
+						type='text'
+						className='mt-1 block w-full rounded'
+						name='todo'
+					/>
+					{showValidation && (
+						<p className='text-red-400 text-sm'>
+							Please enter something to do!
+						</p>
+					)}
 					<button className='mt-4 rounded p-2 bg-slate-50 min-w-[115px]'>
 						Add
 					</button>
 				</form>
-				<div className='todoContainer'>
-					{content}
-				</div>
+				<ul>{content}</ul>
 			</div>
 		</div>
 	);
